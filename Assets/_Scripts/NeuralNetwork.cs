@@ -39,18 +39,18 @@ public class NeuralNetwork
 
     public NeuralNetwork Clone() => new NeuralNetwork(this);
 
-    public void Mutate(float mutationRate)
+    public void Mutate(float mutationRate, float mutationAmount)
     {
         for (int i = 0; i < WeightInputHidden.GetLength(0); i++) {
             for (int j = 0; j < WeightInputHidden.GetLength(1); j++) {
                 if (Random.Range(0f, 1f) < mutationRate)
-                    WeightInputHidden[i, j] = Random.Range(-.5f, .5f);
+                    WeightInputHidden[i, j].MutateWeight(mutationAmount);
             }
         }
         for (int i = 0; i < WeightHiddenOutput.GetLength(0); i++) {
             for (int j = 0; j < WeightHiddenOutput.GetLength(1); j++) {
                 if (Random.Range(0f, 1f) < mutationRate)
-                    WeightHiddenOutput[i, j] = Random.Range(-.5f, .5f);
+                    WeightHiddenOutput[i, j].MutateWeight(mutationAmount);
             }
         }
     }

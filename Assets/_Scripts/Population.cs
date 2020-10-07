@@ -5,13 +5,14 @@ using UnityEngine;
 public class Population : MonoBehaviour
 {
     public bool PauseAtEndOfRound;
-    public bool LoadSaveFile;
+    [Range(-1, 4)] public int LoadSaveFile;
     public bool SaveOnBetterFitness;
-    [SerializeField] private SaveSO saveFile;
     [SerializeField] private int inputNodes;
     [SerializeField] [Tooltip("Usually between input and output values")] private int hiddenNodes;
     [SerializeField] private int outputNodes;
-    [SerializeField] [Range(0f, .02f)] private float mutationRate = .01f;
+    [SerializeField] [Range(0, 100)] private int creatureMutationRate = 5;
+    [SerializeField] [Range(0f, .02f)] private float connectionMutationRate = .01f;
+    [SerializeField] [Range(0f, .5f)] private float mutationAmount = .2f;
     [Tooltip("How many creatures should be created by reproduction, instead of randomly")]
     [SerializeField] [Range(.9f, 1f)] private float procriationPercentage;
     [SerializeField] private bool randomizeStartingHeights = false;
@@ -19,14 +20,13 @@ public class Population : MonoBehaviour
 
     [SerializeField] private int numberOfCreatures;
     [Space(10)]
-    [SerializeField] private GameObject creaturePrefab;
-    [SerializeField] private GameObject platformPrefab;
+    [SerializeField] private GameObject creatureOriginal;
     [SerializeField] private Transform creaturesParent;
     [SerializeField] [Tooltip("Build by clicking on the context menu cog")] private Transform mazeParent;
     public const float DistanceBetweenPlataforms = 4f;
 
     private int generation = 0;
-    public static int MaximumLife = 500;
+    public static int MaximumLife = 300;
     public static int AmountDeadByAge = 0;
     private const int minDeadByAge = 3;
 
@@ -37,22 +37,34 @@ public class Population : MonoBehaviour
     private float fitnessSum;
     private static float bestFitness;
     private NeuralNetwork[] tempNeuralNets;
+    private float oldAverage = 0;
     #endregion
 
+    [SerializeField] [Range(0, 4)] private int mapNumber;
+    [SerializeField] private SaveSO[] saveFiles;
+    [SerializeField] private GameObject[] platformPrefabs;
     /// <summary>Skips a frame in between destroying and rebuilding everything</summary>
     private bool skipFrame = false;
 
     [ContextMenu("Build")]
     public void Build()
     {
+        int n = mazeParent.childCount;
+        for (int i = n - 1; i >= 0; i--)
+            DestroyImmediate(mazeParent.GetChild(i).gameObject);
+
         for (int i = 0; i < numberOfCreatures; i++)
-            Instantiate(platformPrefab, new Vector3(DistanceBetweenPlataforms * (i - numberOfCreatures / 2), 0, 0), Quaternion.identity, mazeParent);
+            Instantiate(platformPrefabs[mapNumber], new Vector3(DistanceBetweenPlataforms * (i - numberOfCreatures / 2), 0, 0), Quaternion.identity, mazeParent);
     }
 
     private void Awake()
     {
         creatures = new Creature[numberOfCreatures];
         fitness = new float[numberOfCreatures];
+        creatureOriginal.SetActive(false);
+        Creature c = creatureOriginal.GetComponent<Creature>();
+        inputNodes = 2 + c.numberOfLasers + c.memoriesToConsider * 2;
+        hiddenNodes = inputNodes;
     }
 
     private void Start()
@@ -61,11 +73,12 @@ public class Population : MonoBehaviour
         for (int i = 0; i < creatures.Length; i++) {
             if (randomizeStartingHeights)
                 startingHeight = UnityEngine.Random.Range(1, 6);
-            go = Instantiate(creaturePrefab, new Vector3(DistanceBetweenPlataforms * (i - numberOfCreatures / 2), startingHeight, 0), Quaternion.identity, creaturesParent);
+            go = Instantiate(creatureOriginal, new Vector3(DistanceBetweenPlataforms * (i - numberOfCreatures / 2), startingHeight, 0), Quaternion.identity, creaturesParent);
             go.name = "Creature " + i;
+            go.SetActive(true);
             creatures[i] = go.GetComponent<Creature>();
-            if (LoadSaveFile && saveFile.Fitness > 0) {
-                saveFile.Load(out float[,] WIH, out float[,] WHO);
+            if (LoadSaveFile >= 0 && saveFiles[mapNumber].Fitness > 0) {
+                saveFiles[mapNumber].Load(out float[,] WIH, out float[,] WHO);
                 creatures[i].Setup(new NeuralNetwork(WIH, WHO));
             }
             else
@@ -91,7 +104,11 @@ public class Population : MonoBehaviour
                 MaximumLife += 100;
             CalculateFitness();
             NaturalSelection();
-            Debug.Log($"Gen {generation} - Avg {fitnessSum / numberOfCreatures} - Best {bestFitness} - Age {AmountDeadByAge}");
+            if (oldAverage > fitnessSum / numberOfCreatures)
+                Debug.Log($"Gen {generation} - Avg <color=red>{fitnessSum / numberOfCreatures}</color> - Best {bestFitness} - Age {AmountDeadByAge}");
+            else
+                Debug.Log($"Gen {generation} - Avg <color=green>{fitnessSum / numberOfCreatures}</color> - Best {bestFitness} - Age {AmountDeadByAge}");
+            oldAverage = fitnessSum / numberOfCreatures;
             TryToSave();
             if (PauseAtEndOfRound) EditorApplication.isPaused = true;
         }
@@ -99,9 +116,9 @@ public class Population : MonoBehaviour
 
     private void TryToSave()
     {
-        if (!SaveOnBetterFitness || creatures[0].Fitness < saveFile.Fitness)
+        if (!SaveOnBetterFitness || creatures[0].Fitness * .999f < saveFiles[mapNumber].Fitness)
             return;
-        saveFile.Save(creatures[0].Fitness, creatures[0].NeuralNet.WeightInputHidden, creatures[0].NeuralNet.WeightHiddenOutput);
+        saveFiles[mapNumber].Save(creatures[0].Fitness, creatures[0].NeuralNet.WeightInputHidden, creatures[0].NeuralNet.WeightHiddenOutput);
         Debug.Log("<color=blue>Saved with Fitness </color>" + creatures[0].Fitness);
     }
 
@@ -151,8 +168,9 @@ public class Population : MonoBehaviour
         for (int i = 0; i < creatures.Length; i++) {
             if (randomizeStartingHeights)
                 startingHeight = UnityEngine.Random.Range(1, 6);
-            go = Instantiate(creaturePrefab, new Vector3(DistanceBetweenPlataforms * (i - numberOfCreatures / 2), startingHeight, 0), Quaternion.identity, creaturesParent);
+            go = Instantiate(creatureOriginal, new Vector3(DistanceBetweenPlataforms * (i - numberOfCreatures / 2), startingHeight, 0), Quaternion.identity, creaturesParent);
             go.name = "Creature " + i;
+            go.SetActive(true);
             creatures[i] = go.GetComponent<Creature>();
             if ((float)i / creatures.Length > procriationPercentage)
                 creatures[i].Setup(inputNodes, hiddenNodes, outputNodes);
@@ -164,7 +182,8 @@ public class Population : MonoBehaviour
     private void Mutate()
     {
         for (int i = 5; i < numberOfCreatures; i++)
-            creatures[i].Mutate(mutationRate);
+            if (creatureMutationRate > UnityEngine.Random.Range(0, 100))
+                creatures[i].Mutate(connectionMutationRate, mutationAmount);
     }
 
     private bool AllDead()

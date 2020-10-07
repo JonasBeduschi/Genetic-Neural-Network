@@ -59,9 +59,9 @@ public static class Extensions
     }
 
     /// <summary>0 to 1 range</summary>
-    public static void Activate(this float x)
+    public static void Activate(this ref float x)
     {
-        x = 1f / (1 + Mathf.Exp(-x));
+        x = 1f / (1 + Mathf.Exp(-x)) - .5f;
     }
 
     public static float[,] Activate(this float[,] matrix)
@@ -78,6 +78,15 @@ public static class Extensions
         for (int i = 0; i < array.Length; i++)
             array[i] = matrix[i, 0];
         return array;
+    }
+
+    public static void CopyInto<T>(this T[] original, ref T[] copy, int length)
+    {
+        copy = new T[length];
+        if (original.Length < length)
+            length = original.Length;
+        for (int i = 0; i < length; i++)
+            copy[i] = original[i];
     }
 
     public static float[,] ToMatrix(this float[] array)
@@ -119,4 +128,25 @@ public static class Extensions
         }
         return result;
     }
+
+    public static void MutateWeight(this ref float number, float mutationAmount)
+    {
+        float sign = Random.Range(-1f, 1f);
+        if (sign < 0)
+            sign = -1;
+        else
+            sign = 1;
+        number *= mutationAmount * sign;
+        number.Cap(-.5f, .5f);
+    }
+
+    public static void Cap(this ref float number, float min = 0, float max = 1)
+    {
+        if (number > max)
+            number = max;
+        else if (number < min)
+            number = min;
+    }
+
+    public static Quaternion QuaternionFromDegrees(float degrees) => Quaternion.Euler(degrees, 0, 0);
 }

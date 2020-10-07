@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Save File", menuName = "New SaveSO")]
+[CreateAssetMenu(fileName = "New Save File", menuName = "New Save")]
 public class SaveSO : ScriptableObject
 {
-    [SerializeField] public float Fitness { get; private set; }
+    [SerializeField] private float fitness;
+    public float Fitness { get => fitness; private set => fitness = value; }
     [SerializeField] private float[] WeightInputHidden;
     [SerializeField] private float[] WeightHiddenOutput;
 
@@ -36,5 +37,15 @@ public class SaveSO : ScriptableObject
         for (int i = 0; i < sizeWHO; i++)
             for (int j = 0; j < originalWHO.GetLength(1); j++)
                 originalWHO[i, j] = WeightHiddenOutput[i * originalWHO.GetLength(1) + j];
+    }
+
+    [ContextMenu("Reset Item")]
+    public void Reset()
+    {
+        fitness = 0;
+        WeightInputHidden = new float[0];
+        WeightHiddenOutput = new float[0];
+        sizeWIH = 0;
+        sizeWHO = 0;
     }
 }
