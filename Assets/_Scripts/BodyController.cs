@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class HeadController : MonoBehaviour
+public class BodyController : MonoBehaviour
 {
     [SerializeField] private Creature creature;
     [SerializeField] private GameObject turnOn;

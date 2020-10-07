@@ -122,7 +122,7 @@ public class Creature : MonoBehaviour, IComparable
         if (impact == 0)
             impact = -50;
         Destroy(bodyTransform.GetComponent<Rigidbody>());
-        Destroy(bodyTransform.GetComponent<HeadController>());
+        Destroy(bodyTransform.GetComponent<BodyController>());
         if (headPositionZ <= 0) {
             Fitness = 0;
             return;

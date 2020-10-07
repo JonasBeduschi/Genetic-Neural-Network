@@ -1,22 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using UnityEditor;
 using UnityEngine;
-using UnityEditor;
-using System;
 
 [CustomEditor(typeof(Creature))]
 public class CreatureEditor : Editor
 {
-    Creature script;
-    GUIContent content;
+    private Creature script;
+    private GUIContent content;
 
-    SerializedProperty lasers;
-    SerializedProperty layer;
-    SerializedProperty numberOfLasers;
-    SerializedProperty memoryLength;
-    SerializedProperty memoriesToConsider;
+    private SerializedProperty lasers;
+    private SerializedProperty layer;
+    private SerializedProperty numberOfLasers;
+    private SerializedProperty memoryLength;
+    private SerializedProperty memoriesToConsider;
 
-    int previousLasers;
+    private int previousLasers;
 
     private void OnEnable()
     {
@@ -27,7 +24,6 @@ public class CreatureEditor : Editor
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
-
 
         lasers = serializedObject.FindProperty(nameof(script.lasers));
         layer = serializedObject.FindProperty(nameof(script.layer));
@@ -43,48 +39,58 @@ public class CreatureEditor : Editor
         }
 
         // Fitness
-        EditorGUILayout.LabelField("Fitness", script.Fitness.ToString());
-        // Head Transform
+        content = new GUIContent("Fitness", "The fitness of this Creature, calculated only when dead");
+        EditorGUILayout.LabelField(content, new GUIContent(script.Fitness.ToString()));
+
+        // Body Transform
+        content = new GUIContent("Body", "The actual moving part of the Creature, usually named \"Body\"");
         if (Application.isPlaying) {
             EditorGUI.BeginDisabledGroup(true);
-            script.bodyTransform = (Transform)EditorGUILayout.ObjectField("body", script.bodyTransform, typeof(Transform), true);
+            script.bodyTransform = (Transform)EditorGUILayout.ObjectField(content, script.bodyTransform, typeof(Transform), true);
             EditorGUI.EndDisabledGroup();
         }
         else
-            script.bodyTransform = (Transform)EditorGUILayout.ObjectField("body", script.bodyTransform, typeof(Transform), true);
+            script.bodyTransform = (Transform)EditorGUILayout.ObjectField(content, script.bodyTransform, typeof(Transform), true);
+
         // Layer
+        content = new GUIContent("Floor Layer", "The Layer in which walls and obstacles are located");
         if (Application.isPlaying)
-            EditorGUILayout.LabelField("Layer", script.layer.ToString());
+            EditorGUILayout.LabelField(content, script.layer.ToString());
         else {
-            content = new GUIContent("Layer");
+            content = new GUIContent(content);
             EditorGUILayout.PropertyField(layer, content, true);
         }
+
         // Number of Lasers
+        content = new GUIContent("Number of Lasers", "How many detection lasers should the Creature have? One single input is added per laser on the NN");
         if (Application.isPlaying)
-            EditorGUILayout.LabelField("Number of Lasers", script.numberOfLasers.ToString());
+            EditorGUILayout.LabelField(content, script.numberOfLasers.ToString());
         else {
-            content = new GUIContent("Number of Lasers");
+            content = new GUIContent(content);
             EditorGUILayout.IntSlider(numberOfLasers, 0, 32, content);
         }
+
         // Lasers
+        content = new GUIContent("Lasers", "The list of lasers from the Creature, not to be updated manually");
         EditorGUI.BeginDisabledGroup(true);
-        content = new GUIContent("Lasers");
         EditorGUILayout.PropertyField(lasers, content, true);
         EditorGUI.EndDisabledGroup();
-        // Memory length
+
+        // Memory Length
+        content = new GUIContent("Memory Length", "How many previous positions should be saved, one per FixedUpdate");
         if (Application.isPlaying)
-            EditorGUILayout.LabelField("Memory Length", script.memoryLength.ToString());
+            EditorGUILayout.LabelField(content, script.memoryLength.ToString());
         else {
-            content = new GUIContent("Memory Length");
+            content = new GUIContent(content);
             EditorGUILayout.IntSlider(memoryLength, 0, 200, content);
         }
-        // Skip how many memories
+
+        // Memories to Consider
+        content = new GUIContent("Memories to Consider", "How many previous positions should be considered by the NN. Two inputs are added per position (YZ)");
         if (Application.isPlaying)
-            EditorGUILayout.LabelField("Memories to Consider", script.memoriesToConsider.ToString());
-        else {
-            content = new GUIContent("Memories to Consider");
+            EditorGUILayout.LabelField(content, script.memoriesToConsider.ToString());
+        else
             EditorGUILayout.IntSlider(memoriesToConsider, 1, 10, content);
-        }
 
         if (Application.isPlaying) {
             EditorGUI.BeginDisabledGroup(true);
@@ -153,6 +159,4 @@ public class CreatureEditor : Editor
         else
             return 0;
     }
-
-
 }
