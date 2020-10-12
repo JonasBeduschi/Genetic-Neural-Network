@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 [SelectionBase]
@@ -7,6 +8,7 @@ public class Creature : MonoBehaviour, IComparable
 {
     public NeuralNetwork NeuralNet { get; private set; }
     private int lifeCounter = 0;
+    private double points = 0;
 
     public float Fitness = 0;
     public float[] inputs;
@@ -58,6 +60,7 @@ public class Creature : MonoBehaviour, IComparable
         movement = NeuralNet.Query(GetInputs());
         Move();
         lifeCounter += 1;
+        points += bodyTransform.position.z;
         if (lifeCounter >= Population.MaximumLife) {
             Population.AmountDeadByAge++;
             Die(bodyTransform.position.z, 0);
@@ -114,21 +117,24 @@ public class Creature : MonoBehaviour, IComparable
 
     public void Mutate(float mutationRate, float mutationAmount) => NeuralNet.Mutate(mutationRate, mutationAmount);
 
-    public void Die(float headPositionZ, float impact)
+    public void Die(float bodyPositionZ, float impact)
     {
         if (Dead)
             return;
         Dead = true;
-        if (impact == 0)
-            impact = -50;
         Destroy(bodyTransform.GetComponent<Rigidbody>());
         Destroy(bodyTransform.GetComponent<BodyController>());
-        if (headPositionZ <= 0) {
+        if (bodyPositionZ <= 0) {
             Fitness = 0;
             return;
         }
-        headPositionZ += 1;
-        Fitness = (headPositionZ.Power(2) / ((lifeCounter / 2 + 100) * (impact + 100))) * 100;
+        bodyPositionZ += 1;
+        SetFitness(bodyPositionZ, impact);
+    }
+
+    private void SetFitness(float bodyPositionZ, float impact)
+    {
+        Fitness = (bodyPositionZ.Power(2) / (impact + 1)) * ((float)points / 1000000f);
     }
 
     public NeuralNetwork GetBrain() => NeuralNet.Clone();
@@ -140,6 +146,8 @@ public class Creature : MonoBehaviour, IComparable
     private void OnDrawGizmosSelected()
     {
         if (Dead)
+            return;
+        if (Selection.activeObject != gameObject)
             return;
         Gizmos.color = Color.cyan;
         if (previousPositions.Count > 0) {

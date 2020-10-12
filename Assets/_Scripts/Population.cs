@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Population : MonoBehaviour
 {
-    public bool PauseAtEndOfRound;
+    private enum PauseCondition { None, EveryGeneration, OnDeathByAge, OnBestFitness }
+    [SerializeField] private PauseCondition pauseCondition = PauseCondition.None;
     [Range(-1, 4)] public int LoadSaveFile;
     public bool SaveOnBetterFitness;
     [SerializeField] private int inputNodes;
@@ -26,9 +27,9 @@ public class Population : MonoBehaviour
     public const float DistanceBetweenPlataforms = 4f;
 
     private int generation = 0;
-    public static int MaximumLife = 300;
+    public static int MaximumLife = 600;
     public static int AmountDeadByAge = 0;
-    private const int minDeadByAge = 3;
+    private const int minDeadByAge = 2000;
 
     private Creature[] creatures;
 
@@ -109,17 +110,32 @@ public class Population : MonoBehaviour
             else
                 Debug.Log($"Gen {generation} - Avg <color=green>{fitnessSum / numberOfCreatures}</color> - Best {bestFitness} - Age {AmountDeadByAge}");
             oldAverage = fitnessSum / numberOfCreatures;
-            TryToSave();
-            if (PauseAtEndOfRound) EditorApplication.isPaused = true;
+            bool saved = TryToSave();
+            switch (pauseCondition) {
+                case PauseCondition.EveryGeneration:
+                    EditorApplication.isPaused = true;
+                    break;
+                case PauseCondition.OnDeathByAge:
+                    if (AmountDeadByAge > 0)
+                        EditorApplication.isPaused = true;
+                    break;
+                case PauseCondition.OnBestFitness:
+                    if (saved)
+                        EditorApplication.isPaused = true;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
-    private void TryToSave()
+    private bool TryToSave()
     {
         if (!SaveOnBetterFitness || creatures[0].Fitness * .999f < saveFiles[mapNumber].Fitness)
-            return;
+            return false;
         saveFiles[mapNumber].Save(creatures[0].Fitness, creatures[0].NeuralNet.WeightInputHidden, creatures[0].NeuralNet.WeightHiddenOutput);
         Debug.Log("<color=blue>Saved with Fitness </color>" + creatures[0].Fitness);
+        return true;
     }
 
     private void CalculateFitness()

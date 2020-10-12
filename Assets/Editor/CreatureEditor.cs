@@ -38,64 +38,51 @@ public class CreatureEditor : Editor
             }
         }
 
+        DrawEditor();
+
+        serializedObject.ApplyModifiedProperties();
+    }
+    private void DrawEditor()
+    {
+        if (Application.isPlaying)
+            EditorGUI.BeginDisabledGroup(true);
+
         // Fitness
         content = new GUIContent("Fitness", "The fitness of this Creature, calculated only when dead");
         EditorGUILayout.LabelField(content, new GUIContent(script.Fitness.ToString()));
 
-        // Body Transform
+        // Body
         content = new GUIContent("Body", "The actual moving part of the Creature, usually named \"Body\"");
-        if (Application.isPlaying) {
-            EditorGUI.BeginDisabledGroup(true);
-            script.bodyTransform = (Transform)EditorGUILayout.ObjectField(content, script.bodyTransform, typeof(Transform), true);
-            EditorGUI.EndDisabledGroup();
-        }
-        else
-            script.bodyTransform = (Transform)EditorGUILayout.ObjectField(content, script.bodyTransform, typeof(Transform), true);
+        script.bodyTransform = (Transform)EditorGUILayout.ObjectField(content, script.bodyTransform, typeof(Transform), true);
 
         // Layer
         content = new GUIContent("Floor Layer", "The Layer in which walls and obstacles are located");
-        if (Application.isPlaying)
-            EditorGUILayout.LabelField(content, script.layer.ToString());
-        else {
-            content = new GUIContent(content);
-            EditorGUILayout.PropertyField(layer, content, true);
-        }
+        EditorGUILayout.PropertyField(layer, content, true);
 
-        // Number of Lasers
+        // Number of lasers
         content = new GUIContent("Number of Lasers", "How many detection lasers should the Creature have? One single input is added per laser on the NN");
-        if (Application.isPlaying)
-            EditorGUILayout.LabelField(content, script.numberOfLasers.ToString());
-        else {
-            content = new GUIContent(content);
-            EditorGUILayout.IntSlider(numberOfLasers, 0, 32, content);
-        }
+        content = new GUIContent(content);
+        EditorGUILayout.IntSlider(numberOfLasers, 0, 32, content);
 
         // Lasers
+        if (!Application.isPlaying) EditorGUI.BeginDisabledGroup(true);
         content = new GUIContent("Lasers", "The list of lasers from the Creature, not to be updated manually");
-        EditorGUI.BeginDisabledGroup(true);
         EditorGUILayout.PropertyField(lasers, content, true);
-        EditorGUI.EndDisabledGroup();
+        if (!Application.isPlaying) EditorGUI.EndDisabledGroup();
 
-        // Memory Length
+        // Memory length
         content = new GUIContent("Memory Length", "How many previous positions should be saved, one per FixedUpdate");
-        if (Application.isPlaying)
-            EditorGUILayout.LabelField(content, script.memoryLength.ToString());
-        else {
-            content = new GUIContent(content);
-            EditorGUILayout.IntSlider(memoryLength, 0, 200, content);
-        }
+        content = new GUIContent(content);
+        EditorGUILayout.IntSlider(memoryLength, 0, 200, content);
 
-        // Memories to Consider
+        // Memories to consider
         content = new GUIContent("Memories to Consider", "How many previous positions should be considered by the NN. Two inputs are added per position (YZ)");
-        if (Application.isPlaying)
-            EditorGUILayout.LabelField(content, script.memoriesToConsider.ToString());
-        else
-            EditorGUILayout.IntSlider(memoriesToConsider, 1, 10, content);
+        EditorGUILayout.IntSlider(memoriesToConsider, 1, 10, content);
 
+        // In-game data
         if (Application.isPlaying) {
-            EditorGUI.BeginDisabledGroup(true);
             content = new GUIContent("Instant Velocity");
-            EditorGUILayout.Vector3Field(content, new Vector3(0, script.inputs[0], script.inputs[1]));
+            if (script.inputs.Length > 0) EditorGUILayout.Vector3Field(content, new Vector3(0, script.inputs[0], script.inputs[1]));
             int startIndex = 2 + script.memoriesToConsider * 2;
             if (script.inputs.Length > startIndex + 2) {
                 EditorGUILayout.LabelField("Up Distance", script.inputs[startIndex + 1].ToString());
@@ -107,12 +94,12 @@ public class CreatureEditor : Editor
             }
             EditorGUI.EndDisabledGroup();
         }
-
-        serializedObject.ApplyModifiedProperties();
-
-        if (previousLasers != numberOfLasers.intValue) {
-            previousLasers = numberOfLasers.intValue;
-            SetLasers(previousLasers);
+        else {
+            // Set lasers
+            if (previousLasers != numberOfLasers.intValue) {
+                previousLasers = numberOfLasers.intValue;
+                SetLasers(previousLasers);
+            }
         }
     }
 
