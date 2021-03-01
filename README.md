@@ -1,5 +1,5 @@
 # Genetic Neural Network
-Unity project about genetically selected neural networks
+Unity project about genetically🧬 selected neural networks
 
 ## GIFs because why not
 ![Generation 1](Images/Gen1.gif)
@@ -34,9 +34,9 @@ It contains the following:
     * Map number - Defines both the map to be built and the save file to be used when saving
     * Maze Parent - Parent object for the maps to keep things organized
     * Select the Map Number you want and click "Build"    
-  * Pause Condition - If you want to pause the simulation at specific points
-  * Load Save File - Loads a specific save file on Play. Agents will be copied based on the NN saved on the file of this index (set it to -1 to ignore)
-  * Save On Better Fitness - If an `Agent` achieves a better fitness than the one saved, its NN will be saved overwriting the old one
+  * ⏸Pause Condition - If you want to pause the simulation at specific points
+  * 🔃Load Save File - Loads a specific save file on Play. Agents will be copied based on the NN saved on the file of this index (set it to -1 to ignore)
+  * 💾Save On Better Fitness - If an `Agent` achieves a better fitness than the one saved, its NN will be saved overwriting the old one
   * Auto Select First Agent - Helps with visualization
   * Number Of Agents - Used both to create agents and maps
   * Input, hidden and output nodes - Input nodes are adjusted automatically to changes on the `Agent`. Hidden nodes can be altered at will (breaks saves)
