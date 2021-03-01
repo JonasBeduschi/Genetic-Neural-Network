@@ -3,18 +3,23 @@ Unity project about genetically selected neural networks
 
 ## GIFs because why not
 ![Generation 1](Images/Gen1.gif)
+<br>
 First Generation
 
 ![Generation 5](Images/Gen5.gif)
+<br>
 20 seconds later
 
 ![Generation 9](Images/Gen9.gif)
+<br>
 45 seconds later
 
 ![Generation 70](Images/Gen70.gif)
+<br>
 7 minutes later
 
 ![Generation 145](Images/Gen145.gif)
+<br>
 12 minutes later
 
 ## What is this project
