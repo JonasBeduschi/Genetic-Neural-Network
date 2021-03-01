@@ -2,26 +2,30 @@
 Unity project about genetically selected neural networks
 
 ## GIFs because why not
-![NN1](https://raw.githubusercontent.com/JonasBeduschi/Genetic-Neural-Network/master/Images/NN1.gif)
+![Generation 1](Images/Gen1.gif)
 First Generation
 
-![NN2](https://raw.githubusercontent.com/JonasBeduschi/Genetic-Neural-Network/master/Images/NN2.gif)
-5 minutes later
+![Generation 5](Images/Gen5.gif)
+20 seconds later
 
-![NN3](https://raw.githubusercontent.com/JonasBeduschi/Genetic-Neural-Network/master/Images/NN3.gif)
-10 minutes later
+![Generation 9](Images/Gen9.gif)
+45 seconds later
 
-![NN4](https://raw.githubusercontent.com/JonasBeduschi/Genetic-Neural-Network/master/Images/NN4.gif)
-30 minutes later
+![Generation 70](Images/Gen70.gif)
+7 minutes later
+
+![Generation 145](Images/Gen145.gif)
+12 minutes later
 
 ## What is this project
-Made on free time, it is an experimentation on Neural Networks and Genetic Algorithms. Long story short: The little guys "evolve" to navigate the map
+Made on free time, it is an experimentation on Neural Networks and Genetic Algorithms.
+Long story short: The little guys "evolve" to navigate the map
 
 ## How to use it?
 Download Unity and clone/download the repo and open the project! You'll see a single scene that can be used as is or changed.
 It contains the following:
 * SCRIPTS: General information and options to control the Population.
-  * On the context menu, an option "Build" can be found, to create the desired scenarion, as selected on Map Number
+  * The smaller script, an option "Build" can be found, to create the desired scenarion, as selected on Map Number
   * Pause - If you want to pause the simulation at the end of every generation, to check on progress or individual creatures
   * Load save file - Loads a specific save file. Creatures will be copied based on the NN saved on the file of this index (-1 cancels this option)
   * Save on better fitness - If a creature achieves a better fitness than the one saved on this save file `SaveFiles[MapNumber]`, their NN will be saved
