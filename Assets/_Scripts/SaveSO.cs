@@ -1,51 +1,71 @@
 ﻿using UnityEngine;
+using GeneticNeuralNetwork;
 
 [CreateAssetMenu(fileName = "New Save File", menuName = "New Save")]
 public class SaveSO : ScriptableObject
 {
+    // Exists just to be visible in the Inspector
     [SerializeField] private float fitness;
     public float Fitness { get => fitness; private set => fitness = value; }
-    [SerializeField] private float[] WeightInputHidden;
-    [SerializeField] private float[] WeightHiddenOutput;
+    [SerializeField] private float[] arrayOfWeights;
+    [SerializeField] private int[] rows;
+    [SerializeField] private int[] collums;
 
-    [SerializeField] private int sizeWIH;
-    [SerializeField] private int sizeWHO;
-    public void Save(float fitness, float[,] originalWIH, float[,] originalWHO)
+    /// <summary>Saves a NN weights matrix</summary>
+    /// <param name="fitness">The fitness of the NN creature, useful for saving when a better one is found</param>
+    /// <param name="originalWeights">The NN weights to be saved</param>
+    public void Save(float fitness, Matrix[] originalWeights)
     {
         Fitness = fitness;
-        sizeWIH = originalWIH.GetLength(0);
-        WeightInputHidden = new float[sizeWIH * originalWIH.GetLength(1)];
-        for (int i = 0; i < sizeWIH; i++)
-            for (int j = 0; j < originalWIH.GetLength(1); j++)
-                WeightInputHidden[i * originalWIH.GetLength(1) + j] = originalWIH[i, j];
+        rows = new int[originalWeights.Length];
+        collums = new int[originalWeights.Length];
 
-        sizeWHO = originalWHO.GetLength(0);
-        WeightHiddenOutput = new float[sizeWHO * originalWHO.GetLength(1)];
-        for (int i = 0; i < sizeWHO; i++)
-            for (int j = 0; j < originalWHO.GetLength(1); j++)
-                WeightHiddenOutput[i * originalWHO.GetLength(1) + j] = originalWHO[i, j];
+        for (int i = 0; i < originalWeights.Length; i++) {
+            rows[i] = originalWeights[i].Rows;
+            collums[i] = originalWeights[i].Collums;
+        }
+
+        int totalSize = 0;
+        for (int i = 0; i < originalWeights.Length; i++) {
+            totalSize += rows[i] * collums[i];
+        }
+        arrayOfWeights = new float[totalSize];
+
+        int count = 0;
+        for (int i = 0; i < originalWeights.Length; i++) {
+            for (int row = 0; row < rows[i]; row++) {
+                for (int collum = 0; collum < collums[i]; collum++) {
+                    arrayOfWeights[count] = originalWeights[i][row, collum];
+                    count++;
+                }
+            }
+        }
     }
 
-    public void Load(out float[,] originalWIH, out float[,] originalWHO)
+    /// <summary>Loads the NN weights from the save file</summary>
+    /// <param name="weights">Where to load the weights on</param>
+    public void Load(out Matrix[] weights)
     {
-        originalWIH = new float[sizeWIH, WeightInputHidden.Length / sizeWIH];
-        for (int i = 0; i < sizeWIH; i++)
-            for (int j = 0; j < originalWIH.GetLength(1); j++)
-                originalWIH[i, j] = WeightInputHidden[i * originalWIH.GetLength(1) + j];
+        weights = new Matrix[rows.Length];
 
-        originalWHO = new float[sizeWHO, WeightHiddenOutput.Length / sizeWHO];
-        for (int i = 0; i < sizeWHO; i++)
-            for (int j = 0; j < originalWHO.GetLength(1); j++)
-                originalWHO[i, j] = WeightHiddenOutput[i * originalWHO.GetLength(1) + j];
+        int count = 0;
+        for (int i = 0; i < weights.Length; i++) {
+            weights[i] = new Matrix(rows[i], collums[i]);
+            for (int row = 0; row < rows[i]; row++) {
+                for (int collum = 0; collum < collums[i]; collum++) {
+                    weights[i][row, collum] = arrayOfWeights[count];
+                    count++;
+                }
+            }
+        }
     }
 
     [ContextMenu("Reset Item")]
     public void Reset()
     {
-        fitness = 0;
-        WeightInputHidden = new float[0];
-        WeightHiddenOutput = new float[0];
-        sizeWIH = 0;
-        sizeWHO = 0;
+        Fitness = 0;
+        arrayOfWeights = System.Array.Empty<float>();
+        rows = System.Array.Empty<int>();
+        collums = System.Array.Empty<int>();
     }
 }
