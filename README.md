@@ -1,5 +1,7 @@
 # Genetic Neural Network
 Unity project about genetically🧬 selected neural networks
+<br>
+Currently on Unity 2020.2.3
 
 ## GIFs because why not
 ![Generation 1](Images/Gen1.gif)
