@@ -52,7 +52,7 @@ namespace GeneticNeuralNetwork
         public static int AmountDeadByAge = 0;
         private const int minDeadByAge = 2000;
 
-        private MazeRunner[] creatures;
+        private static MazeRunner[] creatures;
 
         #region Natural Selection
 
@@ -69,20 +69,31 @@ namespace GeneticNeuralNetwork
 
         private int mapNumber;
 
+        #region Internal Fields
+        private static int agentsPerCollum;
+        #endregion Internal Fields
+
         /// <summary>Skips a frame in between destroying and rebuilding everything</summary>
         private bool skipFrame = false;
 
         private void Awake()
         {
+            SetupFields();
             mapNumber = GetComponent<MazeBuilder>().MapNumber;
             creatures = new MazeRunner[numberOfAgents];
-            fitness = new float[numberOfAgents];
-            originalAgent.SetActive(false);
             MazeRunner c = originalAgent.GetComponent<MazeRunner>();
+
             inputNodes = 2 + c.numberOfLasers + c.memoriesToConsider * 2;
             for (int i = 0; i < hiddenNodes.Length; i++)
                 if (hiddenNodes[i] <= 0)
                     hiddenNodes[i] = outputNodes;
+        }
+
+        private void SetupFields()
+        {
+            agentsPerCollum = numberOfAgents / NumberOfCollums;
+            fitness = new float[numberOfAgents];
+            originalAgent.SetActive(false);
         }
 
         private void Start()
@@ -240,23 +251,28 @@ namespace GeneticNeuralNetwork
             if (randomizeStartingHeights)
                 startingHeight = Random.Range(minStartingHeight, maxStartingHeight + 1);
 
-            int agentsPerCollum = numberOfAgents / NumberOfCollums;
-
-            float x = DistanceBetweenPlataformsX * (agentIndex / agentsPerCollum);
-            float y = (agentIndex % agentsPerCollum) * DistanceBetweenPlataformsY + startingHeight;
-
-            GameObject go = Instantiate(originalAgent, new Vector3(x, y, 0), Quaternion.identity, agentParent);
+            GameObject go = Instantiate(originalAgent, PositionFromIndex(agentIndex, startingHeight), Quaternion.identity, agentParent);
 
             go.name = "Agent " + agentIndex;
             go.SetActive(true);
             creatures[agentIndex] = go.GetComponent<MazeRunner>();
 
+            if (autoselectFirstAgent && agentIndex == 0)
+                SelectFirstAgent(go);
+        }
+
+        private static void SelectFirstAgent(GameObject go)
+        {
 #if UNITY_EDITOR
-            if (agentIndex != 0)
-                return;
             if (Selection.activeObject == null || Selection.activeObject.name == "Agent 0")
                 Selection.activeGameObject = go;
 #endif
+        }
+        private static Vector3 PositionFromIndex(int agentIndex, float startingHeight)
+        {
+            float x = DistanceBetweenPlataformsX * (agentIndex / agentsPerCollum);
+            float y = (agentIndex % agentsPerCollum) * DistanceBetweenPlataformsY + startingHeight;
+            return new Vector3(x, y, 0);
         }
 
         private void Mutate()
