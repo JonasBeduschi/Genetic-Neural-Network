@@ -34,10 +34,14 @@ namespace GeneticNeuralNetwork
 
         protected abstract void SetupAgent();
 
+        public void Mutate(float mutationRate, float mutationAmount) => NeuralNet.Mutate(mutationRate, mutationAmount);
+
         protected abstract float[] GetInputs();
 
         public NeuralNetwork GetBrain() => new NeuralNetwork(NeuralNet);
 
-        public int CompareTo(object obj) => Fitness.CompareTo(((MazeRunner)obj).Fitness);
+        public bool Dead { get; protected set; } = false;
+
+        public int CompareTo(object obj) => Fitness.CompareTo(((Agent)obj).Fitness);
     }
 }

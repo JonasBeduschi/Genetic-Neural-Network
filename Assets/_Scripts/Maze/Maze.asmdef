@@ -1,0 +1,16 @@
+{
+    "name": "Maze",
+    "rootNamespace": "",
+    "references": [
+        "GUID:c992077b0f34ce54abc84ac6cfb03907"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

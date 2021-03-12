@@ -9,7 +9,11 @@ public class MazeBuilderEditor : Editor
     {
         base.OnInspectorGUI();
         MazeBuilder script = (MazeBuilder)target;
-        if (GUILayout.Button("Build Maze"))
-            script.Build();
+        if (GUILayout.Button("Build Maze")) {
+            if (script.MapNumber < 0)
+                script.ClearParent();
+            else
+                script.Build();
+        }
     }
 }

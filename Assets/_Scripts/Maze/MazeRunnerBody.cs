@@ -16,7 +16,7 @@ namespace GeneticNeuralNetwork
         private void Die(float impact)
         {
             agent.Die(transform.localPosition.x, impact);
-            float f = Population.CompareToBestFitness(agent.Fitness);
+            float f = MazePopulation.CompareToBestFitness(agent.Fitness);
             spriteRenderer.color = new Color(f, f, f);
             Destroy(turnOff);
         }

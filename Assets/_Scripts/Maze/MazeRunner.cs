@@ -55,8 +55,8 @@ public class MazeRunner : Agent
         Move();
         lifeCounter += 1;
         points += bodyTransform.localPosition.x;
-        if (lifeCounter >= Population.MaximumLife) {
-            Population.AmountDeadByAge++;
+        if (lifeCounter >= MazePopulation.MaximumLife) {
+            MazePopulation.AmountDeadByAge++;
             Die(bodyTransform.localPosition.x, 0);
         }
     }
@@ -119,8 +119,6 @@ public class MazeRunner : Agent
         headRB.AddForce(new Vector2(GetOutput()[0], GetOutput()[1]) * strengthAdjustment, ForceMode2D.Force);
     }
 
-    public void Mutate(float mutationRate, float mutationAmount) => NeuralNet.Mutate(mutationRate, mutationAmount);
-
     public void Die(float bodyPositionX, float impact)
     {
         if (Dead)
@@ -148,7 +146,7 @@ public class MazeRunner : Agent
         //* ((float)points / 1000000f);
     }
 
-    public bool Dead { get; private set; } = false;
+    
 
     private void OnDrawGizmosSelected()
     {
