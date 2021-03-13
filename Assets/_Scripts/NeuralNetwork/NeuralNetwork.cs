@@ -6,7 +6,12 @@ namespace GeneticNeuralNetwork
     {
         public Matrix[] Weights;
         private Matrix temp;
-
+        /// <summary>
+        /// Constructor for new random NN.
+        /// </summary>
+        /// <param name="inputNodes">The number of input nodes.</param>
+        /// <param name="hiddenNodes">The number and depth of hidden nodes.</param>
+        /// <param name="outputNodes">The number of output nodes.</param>
         public NeuralNetwork(int inputNodes, int[] hiddenNodes, int outputNodes)
         {
             int[] nodes = new int[2 + hiddenNodes.Length];
@@ -25,6 +30,10 @@ namespace GeneticNeuralNetwork
                 Weights[i] = Matrix.RandomMatrix(nodes[i + 1], nodes[i]);
         }
 
+        /// <summary>
+        /// Constructor for a NN based on a Matrix.
+        /// </summary>
+        /// <param name="weights">The Matrix to be used to create the NN.</param>
         public NeuralNetwork(Matrix[] weights)
         {
             Weights = new Matrix[weights.Length];
@@ -32,6 +41,10 @@ namespace GeneticNeuralNetwork
                 Weights[i] = new Matrix(weights[i]);
         }
 
+        /// <summary>
+        /// Constructor for a NN based on another
+        /// </summary>
+        /// <param name="original">The NN to be copied.</param>
         public NeuralNetwork(NeuralNetwork original)
         {
             Weights = new Matrix[original.Weights.Length];
@@ -39,6 +52,11 @@ namespace GeneticNeuralNetwork
                 Weights[i] = new Matrix(original.Weights[i]);
         }
 
+        /// <summary>
+        /// Constructor for a NN based on the averages of two parent Networks.
+        /// </summary>
+        /// <param name="parentA">The first NN parent.</param>
+        /// <param name="parentB">The second NN parent.</param>
         public NeuralNetwork(NeuralNetwork parentA, NeuralNetwork parentB)
         {
             Weights = new Matrix[parentA.Weights.Length];
@@ -57,6 +75,11 @@ namespace GeneticNeuralNetwork
             return new Matrix(array);
         }
 
+        /// <summary>
+        /// Queries the NN to get an output based on an input.
+        /// </summary>
+        /// <param name="inputs">The input data to query the NN.</param>
+        /// <returns>The output results of the query.</returns>
         public float[] Query(float[] inputs)
         {
             temp = new Matrix(inputs);
@@ -67,7 +90,9 @@ namespace GeneticNeuralNetwork
             return temp.ToArray();
         }
 
-        /// <summary>Randomly mutates the weights of a NN based on certain rates.</summary>
+        /// <summary>
+        /// Randomly mutates the weights of a NN based on certain rates.
+        /// </summary>
         /// <param name="mutationRate">How likely each weight is to mutate.</param>
         /// <param name="mutationAmount">How much the weight should be changed by.</param>
         public void Mutate(float mutationRate, float mutationAmount)
@@ -94,6 +119,10 @@ namespace GeneticNeuralNetwork
             return number;
         }
 
+        /// <summary>
+        /// Returns the length of the input layer of the network.
+        /// </summary>
+        /// <returns></returns>
         public int GetInputLength() => Weights[0].Collums;
     }
 }

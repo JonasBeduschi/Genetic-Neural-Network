@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using UnityEngine;
 
 namespace GeneticNeuralNetwork
@@ -9,16 +8,17 @@ namespace GeneticNeuralNetwork
         public NeuralNetwork NeuralNet { get; protected set; }
 
         protected float[] input;
+
         public float[] GetInput() => input;
 
         protected float[] output;
+
         public float[] GetOutput() => output;
 
         public float Fitness = 0;
 
         public void SetupNN(int inputNodes, int[] hiddenNodes, int outputNodes)
         {
-
             NeuralNet = new NeuralNetwork(inputNodes, hiddenNodes, outputNodes);
             // Add one for bias
             input = new float[inputNodes + 1];

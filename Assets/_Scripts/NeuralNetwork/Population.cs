@@ -13,6 +13,9 @@ namespace GeneticNeuralNetwork
         [SerializeField] protected PauseCondition pauseCondition = PauseCondition.None;
 
         [Range(-1, 4)] public int LoadSaveFile;
+        /// <summary>
+        /// 
+        /// </summary>
         public bool SaveOnBetterFitness;
         [SerializeField] protected bool autoselectFirstAgent;
         [SerializeField] protected int numberOfAgents;
@@ -21,7 +24,7 @@ namespace GeneticNeuralNetwork
         [Header("Neural Network")]
         [SerializeField] protected int inputNodes;
 
-        [SerializeField] [Tooltip("Usually between input and output values")] protected int[] hiddenNodes;
+        [SerializeField] protected int[] hiddenNodes;
         [SerializeField] protected int outputNodes;
 
         [Header("Natural Selection")]
@@ -30,7 +33,7 @@ namespace GeneticNeuralNetwork
         [SerializeField] [Range(0f, .02f)] protected float neuronMutationRate = .01f;
         [SerializeField] [Range(0f, .5f)] protected float mutationAmount = .2f;
 
-        [Tooltip("How many creatures should be created by reproduction, instead of randomly")]
+        /// <summary>How many creatures should be created by reproduction, instead of randomly</summary>
         [SerializeField] [Range(.9f, 1f)] protected float procriationPercentage;
 
         [Header("References")]

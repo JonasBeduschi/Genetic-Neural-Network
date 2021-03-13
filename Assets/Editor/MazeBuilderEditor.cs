@@ -1,4 +1,5 @@
 ﻿using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 
@@ -9,11 +10,14 @@ public class MazeBuilderEditor : Editor
     {
         base.OnInspectorGUI();
         MazeBuilder script = (MazeBuilder)target;
-        if (GUILayout.Button("Build Maze")) {
-            if (script.MapNumber < 0)
-                script.ClearParent();
-            else
-                script.Build();
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Build Maze"))
+            script.Build();
+        GUILayout.Space(5);
+        if (GUILayout.Button("Clear")) {
+            script.ClearParent();
+            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         }
+        GUILayout.EndHorizontal();
     }
 }

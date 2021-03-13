@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(MazePopulation))]
 public class MazeBuilder : MonoBehaviour
 {
-    [SerializeField] [Range(-1, 4)] private int mapNumber;
+    [SerializeField] [Range(0, 4)] private int mapNumber;
     public int MapNumber { get => mapNumber; }
     [SerializeField] private Transform mazeParent;
     [SerializeField] private GameObject[] platformPrefabs;

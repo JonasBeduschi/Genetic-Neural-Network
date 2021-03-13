@@ -1015,7 +1015,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b97546b168f81146b91a9b7ec0ff5cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapNumber: -1
+  mapNumber: 2
   mazeParent: {fileID: 856881761}
   platformPrefabs:
   - {fileID: 131612947011716500, guid: 0f64661adfc8d3e489786111a8538fdf, type: 3}
@@ -1253,7 +1253,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 1834350225513252050}
-  turnOff: {fileID: 3830042588169690596}
+  toBeDestroyed:
+  - {fileID: 1834350226759385045}
+  - {fileID: 1834350226759385044}
   spriteRenderer: {fileID: 1265902396}
 --- !u!1 &1834350226759385043
 GameObject:

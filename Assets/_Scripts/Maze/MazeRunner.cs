@@ -7,7 +7,6 @@ using UnityEngine;
 public class MazeRunner : Agent
 {
     private int lifeCounter = 0;
-    private double points = 0;
 
     private List<Vector2> previousPositions = new List<Vector2>();
 
@@ -54,9 +53,8 @@ public class MazeRunner : Agent
         output = NeuralNet.Query(GetInputs());
         Move();
         lifeCounter += 1;
-        points += bodyTransform.localPosition.x;
-        if (lifeCounter >= MazePopulation.MaximumLife) {
-            MazePopulation.AmountDeadByAge++;
+        if (lifeCounter >= Population.MaximumLife) {
+            Population.AmountDeadByAge++;
             Die(bodyTransform.localPosition.x, 0);
         }
     }
@@ -69,11 +67,11 @@ public class MazeRunner : Agent
         // Bias
         GetInput()[0] = 1;
 
-        // Get position delta (aka instant velocity)
+        // Get position delta (instant velocity)
         GetInput()[1] = (posX - previousPositions[memoryLength - 1].x) / velocityCap;
         GetInput()[2] = (posY - previousPositions[memoryLength - 1].y) / velocityCap;
 
-        //Save this position
+        // Save this position
         previousPositions.Add(bodyTransform.position);
         while (previousPositions.Count > memoryLength)
             previousPositions.RemoveAt(0);
@@ -124,29 +122,20 @@ public class MazeRunner : Agent
         if (Dead)
             return;
         Dead = true;
-        Destroy(bodyTransform.GetComponent<Rigidbody2D>());
-        Destroy(bodyTransform.GetComponent<MazeRunnerBody>());
-        if (bodyPositionX <= 0) {
-            Fitness = 0;
-            return;
-        }
-        bodyPositionX += 1;
+        bodyTransform.GetComponent<MazeRunnerBody>().Die();
         SetFitness(bodyPositionX, impact);
     }
 
     private void SetFitness(float bodyPositionX, float impact)
     {
-        if (impact < 10)
-            impact = 1;
-        else {
-            impact -= 9;
-            impact = Mathf.Sqrt(impact);
+        if (bodyPositionX <= 0) {
+            Fitness = 0;
+            return;
         }
+        impact += 1;
+        bodyPositionX += 1;
         Fitness = Mathf.Pow(bodyPositionX, 2) / impact / Mathf.Sqrt(lifeCounter);
-        //* ((float)points / 1000000f);
     }
-
-    
 
     private void OnDrawGizmosSelected()
     {
