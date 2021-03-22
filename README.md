@@ -24,6 +24,14 @@ First Generation
 <br>
 12 minutes later
 
+![Generation 1](Images/Flappy0.gif)
+<br>
+First Generation
+
+![Generation 5](Images/Flappy5.gif)
+<br>
+2 minutes later
+
 ## What is this project
 Made on free time, it is an experimentation on Neural Networks and Genetic Algorithms.
 Long story short: The little guys "evolve" to navigate the map
