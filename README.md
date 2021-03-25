@@ -4,33 +4,34 @@ Unity project about genetically🧬 selected neural networks
 Currently on Unity 2020.2.3
 
 ## GIFs because why not
+First Generation
+<br>
 ![Generation 1](Images/Gen1.gif)
 <br>
-First Generation
 
+20 seconds later
+<br>
 ![Generation 5](Images/Gen5.gif)
 <br>
-20 seconds later
 
+45 seconds later
+<br>
 ![Generation 9](Images/Gen9.gif)
 <br>
-45 seconds later
 
+7 minutes later
+<br>
 ![Generation 70](Images/Gen70.gif)
 <br>
-7 minutes later
 
+12 minutes later
+<br>
 ![Generation 145](Images/Gen145.gif)
 <br>
-12 minutes later
 
-![Generation 1](Images/Flappy0.gif)
-<br>
-First Generation
-
-![Generation 5](Images/Flappy5.gif)
-<br>
-2 minutes later
+| First Generation | 2 minutes later |
+| --- | --- |
+| ![Generation 1](Images/Flappy0.gif) | ![Generation 5](Images/Flappy5.gif) |
 
 ## What is this project
 Made on free time, it is an experimentation on Neural Networks and Genetic Algorithms.
